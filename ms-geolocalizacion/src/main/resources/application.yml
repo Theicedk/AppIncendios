@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: ms-geolocalizacion
+  datasource:
+    url: jdbc:postgresql://localhost:5434/bd_geolocalizacion
+    username: appuser
+    password: apppass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect
+    open-in-view: false
+
+server:
+  port: 8083

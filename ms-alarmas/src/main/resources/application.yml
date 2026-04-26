@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: ms-alarmas
+  datasource:
+    url: jdbc:postgresql://localhost:5433/bd_alarmas
+    username: appuser
+    password: apppass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+
+server:
+  port: 8082

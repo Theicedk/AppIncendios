@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: route-ms-reportes
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/reportes/**
+
+server:
+  port: 8080

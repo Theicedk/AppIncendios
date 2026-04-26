@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: ms-reportes
+  datasource:
+    url: jdbc:postgresql://localhost:5431/bd_reportes
+    username: appuser
+    password: apppass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+
+server:
+  port: 8081

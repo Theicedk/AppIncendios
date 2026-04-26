@@ -1,0 +1,29 @@
+{
+	"folders": [
+		{
+			"name": "AppIncendios",
+			"path": "."
+		},
+		{
+			"name": "api-gateway",
+			"path": "api-gateway"
+		},
+		{
+			"name": "ms-alarmas",
+			"path": "ms-alarmas"
+		},
+		{
+			"name": "ms-geolocalizacion",
+			"path": "ms-geolocalizacion"
+		},
+		{
+			"name": "ms-reportes",
+			"path": "ms-reportes"
+		},
+		{
+			"name": "frontend",
+			"path": "frontend"
+		}
+	],
+	"settings": {}
+}
