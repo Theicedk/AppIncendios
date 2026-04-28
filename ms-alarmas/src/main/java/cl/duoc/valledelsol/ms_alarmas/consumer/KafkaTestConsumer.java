@@ -1,7 +1,7 @@
 package cl.duoc.valledelsol.ms_alarmas.consumer;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cl.duoc.valledelsol.ms_alarmas.dto.ReporteIncendioKafkaDTO;
 import cl.duoc.valledelsol.ms_alarmas.entity.Alarma;
 import cl.duoc.valledelsol.ms_alarmas.enums.Severidad;
 import cl.duoc.valledelsol.ms_alarmas.repository.AlarmaRepository;
@@ -22,12 +22,17 @@ public class KafkaTestConsumer {
     @KafkaListener(topics = "topic-prueba-incendio", groupId = "ms-alarmas-grupo-prueba")
     public void escuchar(String mensaje) {
         try {
-            JsonNode root = objectMapper.readTree(mensaje);
+            ReporteIncendioKafkaDTO reporte = objectMapper.readValue(mensaje, ReporteIncendioKafkaDTO.class);
 
-            String descripcion = root.path("descripcion").asText(mensaje);
-            Long reporteId = root.hasNonNull("reporteId") ? root.get("reporteId").asLong() : null;
+            String mensajeAlarma = reporte.descripcion() != null
+                ? reporte.descripcion()
+                : (reporte.encabezado() != null ? reporte.encabezado() : mensaje);
 
-            Alarma alarma = new Alarma(null, descripcion, reporteId, Severidad.ROJA);
+            Severidad severidad = reporte.severidad() != null
+                ? reporte.severidad()
+                : Severidad.ROJA;
+
+            Alarma alarma = new Alarma(null, mensajeAlarma, reporte.reporteId(), severidad);
             Alarma guardada = alarmaRepository.save(alarma);
 
             System.out.println("Alarma guardada con ID: " + guardada.getId());

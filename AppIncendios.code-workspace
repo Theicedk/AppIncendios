@@ -25,5 +25,28 @@
 			"path": "frontend"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"sqltools.connections": [
+			{
+				"ssh": "Disabled",
+				"previewLimit": 50,
+				"server": "localhost",
+				"port": 5431,
+				"driver": "PostgreSQL",
+				"name": "ms-reportes",
+				"database": "bd_reportes",
+				"username": "appuser"
+			},
+			{
+				"ssh": "Disabled",
+				"previewLimit": 50,
+				"server": "localhost",
+				"port": 5433,
+				"driver": "PostgreSQL",
+				"name": "ms-alarmas",
+				"database": "bd_alarmas",
+				"username": "appuser"
+			}
+		]
+	}
 }
