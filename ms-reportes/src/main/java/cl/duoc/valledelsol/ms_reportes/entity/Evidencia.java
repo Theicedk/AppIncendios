@@ -3,6 +3,8 @@ package cl.duoc.valledelsol.ms_reportes.entity;
 import cl.duoc.valledelsol.ms_reportes.enums.TipoEvidencia;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,8 +29,8 @@ public class Evidencia {
     @Column(nullable = false)
     private String url;
 
-    @ManyToOne
-    @JoinColumn(name = "tipo_evidencia_id", nullable = false)
+    @Enumerated(EnumType.STRING) // Usa STRING para guardar el nombre, u ORDINAL para el índice
+    @Column(name = "tipo_evidencia")
     private TipoEvidencia evidencia;
 
     @ManyToOne

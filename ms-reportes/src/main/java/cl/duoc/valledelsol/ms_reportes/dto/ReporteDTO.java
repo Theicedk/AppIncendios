@@ -1,4 +1,13 @@
 package cl.duoc.valledelsol.ms_reportes.dto;
 
-public record ReporteDTO(String descripcion, Double latitud, Double longitud) {
+import cl.duoc.valledelsol.ms_reportes.enums.EstadoIncendio;
+
+public record ReporteDTO(
+	String encabezado,
+	String descripcion,
+	Double latitud,
+	Double longitud,
+	Boolean verificado,
+	EstadoIncendio estadoIncendio
+) {
 }

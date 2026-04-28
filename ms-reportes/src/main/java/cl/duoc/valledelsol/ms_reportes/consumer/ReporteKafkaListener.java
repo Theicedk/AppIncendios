@@ -26,14 +26,19 @@ public class ReporteKafkaListener {
     public void escuchar(String mensaje) throws JsonProcessingException {
         ReporteDTO reporteDTO = objectMapper.readValue(mensaje, ReporteDTO.class);
 
+        boolean verificado = reporteDTO.verificado() != null && reporteDTO.verificado();
+        EstadoIncendio estadoIncendio = reporteDTO.estadoIncendio() != null
+            ? reporteDTO.estadoIncendio()
+            : EstadoIncendio.REPORTADO;
+
         Reporte reporte = new Reporte(
             null,
             LocalDateTime.now(),
-            "Reporte de incendio",
+            reporteDTO.encabezado() != null ? reporteDTO.encabezado() : "Reporte de incendio",
             reporteDTO.descripcion(),
             new Point(reporteDTO.longitud(), reporteDTO.latitud()),
-            false,
-            EstadoIncendio.REPORTADO
+            verificado,
+            estadoIncendio
         );
 
         Reporte guardado = reporteRepository.save(reporte);

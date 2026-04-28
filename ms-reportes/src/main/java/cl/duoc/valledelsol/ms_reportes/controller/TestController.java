@@ -3,6 +3,7 @@ package cl.duoc.valledelsol.ms_reportes.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cl.duoc.valledelsol.ms_reportes.dto.ReporteDTO;
+import cl.duoc.valledelsol.ms_reportes.enums.EstadoIncendio;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,9 +31,12 @@ public class TestController {
     @GetMapping("/kafka-test")
     public String kafkaTest() throws JsonProcessingException {
         ReporteDTO reporteDTO = new ReporteDTO(
+            "Reporte de incendio",
             "Evento de prueba desde ms-reportes",
             -33.4489,
             -70.6693
+            ,false,
+            EstadoIncendio.REPORTADO
         );
 
         return enviarALaCola(reporteDTO);
