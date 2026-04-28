@@ -33,7 +33,7 @@ public class ReporteKafkaListener {
             reporteDTO.descripcion(),
             new Point(reporteDTO.longitud(), reporteDTO.latitud()),
             false,
-            EstadoIncendio.EstadosIncendio.REPORTADO
+            EstadoIncendio.REPORTADO
         );
 
         Reporte guardado = reporteRepository.save(reporte);

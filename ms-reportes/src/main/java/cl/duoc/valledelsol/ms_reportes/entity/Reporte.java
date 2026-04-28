@@ -19,7 +19,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "reportes")
+@Table(name = "Reporte")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -38,7 +38,7 @@ public class Reporte {
     @Column(nullable = false)
     private String descripcion;
 
-    @Transient
+    @Transient //Atributo que sirve para informar que la base de datos que este sera un dato no persistente
     private Point ubicacion;
 
     @Column(nullable = false)
@@ -46,5 +46,5 @@ public class Reporte {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private EstadoIncendio.EstadosIncendio estadoIncendio;
+    private EstadoIncendio estadoIncendio;
 }

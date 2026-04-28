@@ -1,30 +1,6 @@
 package cl.duoc.valledelsol.ms_reportes.enums;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Data;
-
-@Entity
-@Data
-public class TipoEvidencia {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
-    private String url;
-
-    @Enumerated(EnumType.STRING)
-    private TiposEvidencia tipo;
-
-    public enum TiposEvidencia {
-        FOTO,
-        VIDEO,
-    }
+public enum TipoEvidencia {
+    FOTO,
+    VIDEO
 }

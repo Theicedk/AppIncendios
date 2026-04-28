@@ -1,6 +1,7 @@
-package cl.duoc.valledelsol.ms_reportes.entity;
+package cl.duoc.valledelsol.ms_alarmas.entity;
 
-import cl.duoc.valledelsol.ms_reportes.enums.TipoEvidencia;
+import java.util.Date;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,24 +15,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Evidencia") //Nombre de la tabla en la base de datos
+@Table(name = "RegistroExposicion") //Nombre de la tabla en la base de datos
 @Data //Creador automatico de getters y setters
 @AllArgsConstructor //Crea un constructor con todo los campos
 @NoArgsConstructor //Crea un constructor vacio para poder crear objetos
-public class Evidencia {
-    
+public class RegistroExposicion {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String url;
+    private String dispositivoId;
 
+    @Column(nullable = false)
+    private Date fechaExposicion;
+    
     @ManyToOne
-    @JoinColumn(name = "tipo_evidencia_id", nullable = false)
-    private TipoEvidencia evidencia;
+    @JoinColumn(name = "idAlarma", nullable = false)
+    private Alarma alarma;
 
-    @ManyToOne
-    @JoinColumn(name = "reporte_id", nullable = false)
-    private Reporte reporteId;
 }
