@@ -1,13 +1,31 @@
-spring:
+spring: 
+  security: ##Config de seguridad para el API Gateway
+    oauth2:
+      resourceserver:
+        jwt:
+          # La URL del dominio de Auth0
+          issuer-uri: https://dev-ecmx143cjy36oshj.us.auth0.com/
+          # El Identificador de la API
+          audiences: https://api-app-incendios-auth0/
   application:
     name: api-gateway
-  cloud:
+  cloud: ##Config de rutas para el API Gateway
     gateway:
       routes:
         - id: route-ms-reportes
           uri: http://localhost:8081
           predicates:
             - Path=/api/reportes/**
+      routes:
+        - id: route-ms-alarmas
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/alarmas/**
+      routes:
+        - id: route-ms-geolocalizacion
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/geolocalizacion/**
 
 server:
   port: 8080
