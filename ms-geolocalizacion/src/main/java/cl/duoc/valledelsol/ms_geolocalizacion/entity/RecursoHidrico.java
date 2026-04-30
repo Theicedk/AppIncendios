@@ -1,6 +1,6 @@
 package cl.duoc.valledelsol.ms_geolocalizacion.entity;
 
-import org.springframework.data.geo.Point;
+import org.locationtech.jts.geom.Point;
 
 import cl.duoc.valledelsol.ms_geolocalizacion.enums.TipoRecurso;
 import jakarta.persistence.Column;
@@ -26,7 +26,7 @@ public class RecursoHidrico {
     @Column(nullable = false)
     private TipoRecurso tipo;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "geometry(Point, 4326)")
     private Point ubicacion;
 
     @Column(nullable = false)
