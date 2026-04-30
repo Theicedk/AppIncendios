@@ -8,6 +8,10 @@ spring:
           uri: http://localhost:8081
           predicates:
             - Path=/api/reportes/**
+        - id: route-ms-geolocalizacion
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/focos/**
 
 server:
   port: 8080
