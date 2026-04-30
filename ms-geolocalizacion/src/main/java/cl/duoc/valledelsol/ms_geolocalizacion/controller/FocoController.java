@@ -7,30 +7,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import cl.duoc.valledelsol.ms_geolocalizacion.dto.FocoMapaDTO;
-import cl.duoc.valledelsol.ms_geolocalizacion.entity.FocoIncendio;
-import cl.duoc.valledelsol.ms_geolocalizacion.repository.FocoIncendioRepository;
+import cl.duoc.valledelsol.ms_geolocalizacion.service.FocoService;
 
 @RestController
 @RequestMapping("/api/focos")
 public class FocoController {
 
-    private final FocoIncendioRepository focoIncendioRepository;
+    private final FocoService focoService;
 
-    public FocoController(FocoIncendioRepository focoIncendioRepository) {
-        this.focoIncendioRepository = focoIncendioRepository;
+    public FocoController(FocoService focoService) {
+        this.focoService = focoService;
     }
 
     @GetMapping
     public List<FocoMapaDTO> obtenerFocos() {
-        List<FocoIncendio> focos = focoIncendioRepository.findAll();
-
-        return focos.stream()
-                .map(foco -> new FocoMapaDTO(
-                    foco.getId(),
-                    foco.getUbicacion().getY(),    // y = latitud
-                    foco.getUbicacion().getX(),    // x = longitud
-                    "ACTIVO"                       // estado fijo por ahora
-                ))
-                .toList();
+        return focoService.obtenerTodos();
     }
 }

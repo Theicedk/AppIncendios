@@ -7,28 +7,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import cl.duoc.valledelsol.ms_reportes.dto.ReporteListaDTO;
-import cl.duoc.valledelsol.ms_reportes.entity.Reporte;
-import cl.duoc.valledelsol.ms_reportes.repository.ReporteRepository;
+import cl.duoc.valledelsol.ms_reportes.service.ReporteService;
 
 @RestController
 @RequestMapping("/api/reportes")
 public class ReporteController {
 
-    private final ReporteRepository reporteRepository;
+    private final ReporteService reporteService;
 
-    public ReporteController(ReporteRepository reporteRepository) {
-        this.reporteRepository = reporteRepository;
+    public ReporteController(ReporteService reporteService) {
+        this.reporteService = reporteService;
     }
 
     @GetMapping
     public List<ReporteListaDTO> obtenerReportes() {
-        List<Reporte> reportes = reporteRepository.findAll();
-
-        return reportes.stream()
-                .map(reporte -> new ReporteListaDTO(
-                    reporte.getId(),
-                    reporte.getDescripcion()
-                ))
-                .toList();
+        return reporteService.obtenerTodos();
     }
 }
