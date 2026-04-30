@@ -19,10 +19,6 @@
 		{
 			"name": "ms-reportes",
 			"path": "ms-reportes"
-		},
-		{
-			"name": "frontend",
-			"path": "frontend"
 		}
 	],
 	"settings": {
@@ -46,7 +42,18 @@
 				"name": "ms-alarmas",
 				"database": "bd_alarmas",
 				"username": "appuser"
+			},
+			{
+				"ssh": "Disabled",
+				"previewLimit": 50,
+				"server": "localhost",
+				"port": 5434,
+				"driver": "PostgreSQL",
+				"name": "ms-geolocalizacion",
+				"database": "bd_geolocalizacion",
+				"username": "appuser"
 			}
-		]
+		],
+		"java.debug.settings.onBuildFailureProceed": true
 	}
 }
