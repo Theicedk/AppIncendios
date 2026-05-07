@@ -16,6 +16,7 @@ spring:
           uri: http://localhost:8081
           predicates:
             - Path=/api/reportes/**
+<<<<<<< HEAD
       routes:
         - id: route-ms-alarmas
           uri: http://localhost:8082
@@ -26,6 +27,12 @@ spring:
           uri: http://localhost:8083
           predicates:
             - Path=/api/geolocalizacion/**
+=======
+        - id: route-ms-geolocalizacion
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/focos/**
+>>>>>>> 9e31219 (fix: add gateway route /api/focos -> ms-geolocalizacion)
 
 server:
   port: 8080
