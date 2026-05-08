@@ -1,4 +1,4 @@
-package cl.duoc.valledelsol.api_gateway.Controller;
+package cl.duoc.valledelsol.api_gateway.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

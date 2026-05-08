@@ -1,3 +1,14 @@
+resilience4j:
+  circuitbreaker:
+    configs:
+      default: # Definimos la configuración por defecto para el Circuit Breaker
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 3s
 spring: 
   security: ##Config de seguridad para el API Gateway
     oauth2:
@@ -16,16 +27,29 @@ spring:
           uri: http://localhost:8081
           predicates:
             - Path=/api/reportes/**
-      routes:
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCB # Usa la config definida previamente
+                fallbackUri: forward:/fallback/errorReportes
         - id: route-ms-alarmas
           uri: http://localhost:8082
           predicates:
             - Path=/api/alarmas/**
-      routes:
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCB # Usa la config definida previamente
+                fallbackUri: forward:/fallback/errorAlarmas
         - id: route-ms-geolocalizacion
           uri: http://localhost:8083
           predicates:
             - Path=/api/focos/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCB # Usa la config definida previamente
+                fallbackUri: forward:/fallback/errorGeolocalizacion
 
 server:
   port: 8080
