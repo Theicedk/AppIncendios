@@ -11,34 +11,27 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @Configuration // Avisa a Spring que esta clase contiene configuraciones del sistema
 @EnableWebFluxSecurity // Version especial para gateway de @EnableWebSecurity
 public class SecurityConfig {
+    
     // Funcion value que sirve para inyectar el valor de nuestra variable audience desde el application.yml
     @Value("${spring.security.oauth2.resourceserver.jwt.audiences}")
     private String audience;
 
     @Bean //Funcion que se encarga de guardar el resultado de la config de seguridad, para que luego pueda ser reutilizada en spring
-    //Objeto que sirve como filtro de seguridad para las rutas del API Gateway, se encarga de validar los tokens JWT y verificar los permisos de acceso a las rutas protegidas
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http)
-                                                            //Objeto que sirve para configurar y establecer estos filtros (en este caso con http)
-    {
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
-            //Empieza la config de seguridad
+            // Empieza la config de seguridad
             .authorizeExchange(exchanges -> exchanges
-                //Busca coincidencias con el token JWT ya sea para reportes o geolocalizacion
-                //.hasAuthority realiza la verificacion que el token JWT tenga el permiso para acceder a la ruta
-                .pathMatchers("/api/reportes/**").hasAuthority("SCOPE_read:reportes")
-                .pathMatchers("/api/geolocalizacion/**").hasAuthority("SCOPE_read:geolocalizacion")
-                
-                //Verificador que cualquier otra ruta que no coincida con las anteriores, requiera autenticacion (token JWT valido)
-                .anyExchange().authenticated()
+                // Se permiten todas las rutas de forma temporal para facilitar el testeo en desarrollo
+                .anyExchange().permitAll()
             )
-            //Avisa al gateway que para validar los tokens JWT, debe utilizar info de la configuracion de seguridad de OAuth2 Resource Server, que se encuentra en el application.yml
+            // Se mantiene la configuración del Resource Server para que el contexto de Spring no falle,
+            // pero .permitAll() tiene prioridad sobre la validación de tokens.
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
-        http.csrf(csrf -> csrf.disable()); // Deshabilitamos CSRF para permitir peticiones POST, PUT, DELETE sin token CSRF
+        // Deshabilitamos CSRF para permitir peticiones POST, PUT, DELETE sin token CSRF
+        http.csrf(csrf -> csrf.disable()); 
         
-        //Se cierra la config de seguridad y se devuelve para que Spring la utilice en el API Gateway
+        // Se cierra la config de seguridad y se devuelve para que Spring la utilice en el API Gateway
         return http.build();
     }
-
-
 }
