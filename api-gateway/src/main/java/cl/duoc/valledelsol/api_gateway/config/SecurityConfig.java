@@ -40,6 +40,7 @@ public class SecurityConfig {
                   // Endpoints publicos para pruebas desde Expo Go en red local.
                 // Lecturas abiertas para que el frontend pueda mostrar mapa y reportes mientras no envíe JWT real.
                 // Cuando el frontend adjunte access token, estas reglas se pueden volver a restringir por roles/scopes.
+                .pathMatchers(HttpMethod.GET, "/api/bff/dashboard-combinado").permitAll()
                 .pathMatchers(HttpMethod.GET, "/api/reportes/**").permitAll()
                 .pathMatchers(HttpMethod.GET, "/api/focos/**").permitAll()
 
@@ -59,7 +60,8 @@ public class SecurityConfig {
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
 
         http.csrf(csrf -> csrf.disable()); // Deshabilitamos CSRF para permitir peticiones POST, PUT, DELETE sin token CSRF
-        
+        http.cors(org.springframework.security.config.Customizer.withDefaults()); // Habilitamos CORS dentro de Spring Security
+
         //Se cierra la config de seguridad y se devuelve para que Spring la utilice en el API Gateway
         return http.build();
     }

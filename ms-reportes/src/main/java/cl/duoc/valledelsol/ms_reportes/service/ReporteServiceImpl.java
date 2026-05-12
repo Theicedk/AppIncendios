@@ -55,7 +55,10 @@ public class ReporteServiceImpl implements ReporteService {
         return reporteRepository.findAll().stream()
             .map(reporte -> new ReporteListaDTO(
                 reporte.getId(),
-                reporte.getDescripcion()
+                reporte.getDescripcion(),
+                reporte.getUbicacion() != null ? reporte.getUbicacion().getX() : null,
+                reporte.getUbicacion() != null ? reporte.getUbicacion().getY() : null,
+                reporte.getEstadoIncendio() != null ? reporte.getEstadoIncendio().name() : cl.duoc.valledelsol.ms_reportes.enums.EstadoIncendio.REPORTADO.name()
             ))
             .toList();
     }
