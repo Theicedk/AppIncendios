@@ -10,5 +10,7 @@ public interface ReporteService {
 
     Reporte guardarReporte(ReporteDTO dto);
 
+    ReporteDTO verificarReporte(Long id);
+
     List<ReporteListaDTO> obtenerTodos();
 }

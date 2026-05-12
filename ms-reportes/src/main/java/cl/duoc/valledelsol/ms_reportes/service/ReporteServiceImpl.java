@@ -51,4 +51,24 @@ public class ReporteServiceImpl implements ReporteService {
             ))
             .toList();
     }
+
+    @Override
+    public ReporteDTO verificarReporte(Long id) {
+        Reporte reporte = reporteRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Reporte no encontrado con ID: " + id));
+        
+        reporte.setVerificado(true);
+        reporte.setEstadoIncendio(EstadoIncendio.VERIFICADO);
+        
+        Reporte guardado = reporteRepository.save(reporte);
+        
+        return new ReporteDTO(
+            guardado.getEncabezado(),
+            guardado.getDescripcion(),
+            guardado.getUbicacion() != null ? guardado.getUbicacion().getX() : null,
+            guardado.getUbicacion() != null ? guardado.getUbicacion().getY() : null,
+            guardado.isVerificado(),
+            guardado.getEstadoIncendio()
+        );
+    }
 }

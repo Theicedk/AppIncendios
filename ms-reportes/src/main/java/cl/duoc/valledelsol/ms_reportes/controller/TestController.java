@@ -49,7 +49,7 @@ public class TestController {
 
     private String enviarALaCola(ReporteDTO reporteDTO) throws JsonProcessingException {
         String mensaje = objectMapper.writeValueAsString(reporteDTO);
-        kafkaTemplate.send("topic-prueba-incendio", mensaje);
+        // kafkaTemplate.send("topic-prueba-incendio", mensaje); // Desconectado temporalmente
         return "Mensaje enviado a Kafka: " + mensaje;
     }
 }
