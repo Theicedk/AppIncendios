@@ -35,7 +35,8 @@ public class ReporteServiceImpl implements ReporteService {
             dto.descripcion(),
             new Point(dto.longitud(), dto.latitud()),
             verificado,
-            estadoIncendio
+            estadoIncendio,
+            null
         );
 
         return reporteRepository.save(reporte);

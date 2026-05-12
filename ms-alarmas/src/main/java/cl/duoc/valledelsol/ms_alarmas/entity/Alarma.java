@@ -33,4 +33,7 @@ public class Alarma {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Severidad severidad = Severidad.ROJA;
+
+    @jakarta.persistence.OneToMany(mappedBy = "alarma", cascade = jakarta.persistence.CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
+    private java.util.List<RegistroExposicion> exposiciones;
 }

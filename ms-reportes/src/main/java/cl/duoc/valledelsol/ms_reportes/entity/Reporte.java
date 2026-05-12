@@ -47,4 +47,7 @@ public class Reporte {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EstadoIncendio estadoIncendio;
+
+    @jakarta.persistence.OneToMany(mappedBy = "reporte", cascade = jakarta.persistence.CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
+    private java.util.List<Evidencia> evidencias;
 }

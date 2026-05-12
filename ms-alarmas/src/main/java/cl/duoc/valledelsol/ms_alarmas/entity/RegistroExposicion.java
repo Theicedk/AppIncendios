@@ -31,7 +31,7 @@ public class RegistroExposicion {
     @Column(nullable = false)
     private Date fechaExposicion;
     
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "idAlarma", nullable = false)
     private Alarma alarma;
 

@@ -33,7 +33,7 @@ public class Evidencia {
     @Column(name = "tipo_evidencia")
     private TipoEvidencia evidencia;
 
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "reporte_id", nullable = false)
-    private Reporte reporteId;
+    private Reporte reporte;
 }

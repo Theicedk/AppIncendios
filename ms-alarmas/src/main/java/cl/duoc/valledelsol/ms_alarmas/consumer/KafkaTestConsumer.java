@@ -32,7 +32,7 @@ public class KafkaTestConsumer {
                 ? reporte.severidad()
                 : Severidad.ROJA;
 
-            Alarma alarma = new Alarma(null, mensajeAlarma, reporte.reporteId(), severidad);
+            Alarma alarma = new Alarma(null, mensajeAlarma, reporte.reporteId(), severidad, null);
             Alarma guardada = alarmaRepository.save(alarma);
 
             System.out.println("Alarma guardada con ID: " + guardada.getId());
