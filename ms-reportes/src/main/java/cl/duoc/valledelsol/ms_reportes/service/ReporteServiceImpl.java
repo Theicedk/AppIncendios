@@ -4,7 +4,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.geo.Point;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cl.duoc.valledelsol.ms_reportes.dto.ReporteDTO;
 import cl.duoc.valledelsol.ms_reportes.dto.ReporteListaDTO;
@@ -16,9 +20,13 @@ import cl.duoc.valledelsol.ms_reportes.repository.ReporteRepository;
 public class ReporteServiceImpl implements ReporteService {
 
     private final ReporteRepository reporteRepository;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ObjectMapper objectMapper;
 
-    public ReporteServiceImpl(ReporteRepository reporteRepository) {
+    public ReporteServiceImpl(ReporteRepository reporteRepository, KafkaTemplate<String, String> kafkaTemplate, ObjectMapper objectMapper) {
         this.reporteRepository = reporteRepository;
+        this.kafkaTemplate = kafkaTemplate;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -62,7 +70,7 @@ public class ReporteServiceImpl implements ReporteService {
         
         Reporte guardado = reporteRepository.save(reporte);
         
-        return new ReporteDTO(
+        ReporteDTO dto = new ReporteDTO(
             guardado.getEncabezado(),
             guardado.getDescripcion(),
             guardado.getUbicacion() != null ? guardado.getUbicacion().getX() : null,
@@ -70,5 +78,14 @@ public class ReporteServiceImpl implements ReporteService {
             guardado.isVerificado(),
             guardado.getEstadoIncendio()
         );
+
+        try {
+            String mensaje = objectMapper.writeValueAsString(dto);
+            kafkaTemplate.send("topic-prueba-incendio", mensaje);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error al serializar el mensaje para Kafka", e);
+        }
+
+        return dto;
     }
 }
