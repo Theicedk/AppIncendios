@@ -17,52 +17,31 @@ import org.springframework.security.oauth2.server.resource.authentication.Reacti
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Arrays;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 @Configuration // Avisa a Spring que esta clase contiene configuraciones del sistema
 @EnableWebFluxSecurity // Version especial para gateway de @EnableWebSecurity
 public class SecurityConfig {
     // Funcion value que sirve para inyectar el valor de nuestra variable audience desde el application.yml
-    @Value("${spring.security.oauth2.resourceserver.jwt.audiences}")
-    private String audience;
+    // @Value("${spring.security.oauth2.resourceserver.jwt.audiences}")
+    // private String audience;
 
     @Bean //Funcion que se encarga de guardar el resultado de la config de seguridad, para que luego pueda ser reutilizada en spring
     //Objeto que sirve como filtro de seguridad para las rutas del API Gateway, se encarga de validar los tokens JWT y verificar los permisos de acceso a las rutas protegidas
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http)
-                                                            //Objeto que sirve para configurar y establecer estos filtros (en este caso con http)
-    {
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
-            //Empieza la config de seguridad
             .authorizeExchange(exchanges -> exchanges
-                //Busca coincidencias con el token JWT ya sea para reportes o geolocalizacion
-                //.hasAuthority realiza la verificacion que el token JWT tenga el permiso para acceder a la ruta
-                //.pathMatchers("/api/reportes/**").hasAuthority("SCOPE_read:reportes")
-                //.pathMatchers("/api/geolocalizacion/**").hasAuthority("SCOPE_read:geolocalizacion")
-                  // Endpoints publicos para pruebas desde Expo Go en red local.
-                // Lecturas abiertas para que el frontend pueda mostrar mapa y reportes mientras no envíe JWT real.
-                // Cuando el frontend adjunte access token, estas reglas se pueden volver a restringir por roles/scopes.
-                .pathMatchers(HttpMethod.GET, "/api/bff/dashboard-combinado").permitAll()
-                .pathMatchers(HttpMethod.GET, "/api/reportes/**").permitAll()
-                .pathMatchers(HttpMethod.GET, "/api/focos/**").permitAll()
-
-                // Permisos de escritura/edicion/borrado: permiten tokens con scope `write:*` o roles con privilegios (Usuario, Moderador, Autoridad).
-                .pathMatchers(HttpMethod.POST, "/api/reportes/**").hasAnyAuthority("SCOPE_write:reportes", "ROLE_Usuario", "ROLE_Moderador", "ROLE_Autoridad")
-                .pathMatchers(HttpMethod.PUT, "/api/reportes/**").hasAnyAuthority("SCOPE_write:reportes", "ROLE_Usuario", "ROLE_Moderador", "ROLE_Autoridad")
-                .pathMatchers(HttpMethod.DELETE, "/api/reportes/**").hasAnyAuthority("SCOPE_write:reportes", "ROLE_Usuario", "ROLE_Moderador", "ROLE_Autoridad")
-
-                .pathMatchers(HttpMethod.POST, "/api/focos/**").hasAnyAuthority("SCOPE_write:geolocalizacion", "ROLE_Usuario", "ROLE_Moderador", "ROLE_Autoridad")
-                .pathMatchers(HttpMethod.PUT, "/api/focos/**").hasAnyAuthority("SCOPE_write:geolocalizacion", "ROLE_Usuario", "ROLE_Moderador", "ROLE_Autoridad")
-                .pathMatchers(HttpMethod.DELETE, "/api/focos/**").hasAnyAuthority("SCOPE_write:geolocalizacion", "ROLE_Usuario", "ROLE_Moderador", "ROLE_Autoridad")
-                //Verificador que cualquier otra ruta que no coincida con las anteriores, requiera autenticacion (token JWT valido)
-                .anyExchange().authenticated()
+                // PERMITIR TODO TEMPORALMENTE (PARA LA APP MÓVIL / SIN AUTH)
+                .anyExchange().permitAll()
             )
-            //Avisa al gateway que para validar los tokens JWT, debe utilizar info de la configuracion de seguridad de OAuth2 Resource Server, que se encuentra en el application.yml
-            //Usamos un convertidor reactivo que además extrae la claim `roles` y `permissions` y las mapea a authorities
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+            // Deshabilitar CSRF
+            .csrf(csrf -> csrf.disable())
+            // Habilitar CORS
+            .cors(org.springframework.security.config.Customizer.withDefaults());
 
-        http.csrf(csrf -> csrf.disable()); // Deshabilitamos CSRF para permitir peticiones POST, PUT, DELETE sin token CSRF
-        http.cors(org.springframework.security.config.Customizer.withDefaults()); // Habilitamos CORS dentro de Spring Security
-
-        //Se cierra la config de seguridad y se devuelve para que Spring la utilice en el API Gateway
         return http.build();
     }
 

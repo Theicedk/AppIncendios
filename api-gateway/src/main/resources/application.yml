@@ -10,19 +10,29 @@ resilience4j:
       default:
         timeoutDuration: 3s
 spring: 
-  security: ##Config de seguridad para el API Gateway
-    oauth2:
-      resourceserver:
-        jwt:
-          # La URL del dominio de Auth0
-          issuer-uri: https://dev-ecmx143cjy36oshj.us.auth0.com/
-          # El Identificador de la API
-          audiences: https://api-app-incendios-auth0/
+#  security: ##Config de seguridad para el API Gateway
+#    oauth2:
+#      resourceserver:
+#        jwt:
+#          # La URL del dominio de Auth0
+#          issuer-uri: https://dev-ecmx143cjy36oshj.us.auth0.com/
+#          # El Identificador de la API
+#          audiences: https://api-app-incendios-auth0/
   application:
     name: api-gateway
   cloud: ##Config de rutas para el API Gateway
     gateway:
       routes:
+        - id: route-ms-reportes-verificar
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/reportes/{id}/verificar
+          filters:
+            - StripPrefix=0
+            - name: CircuitBreaker
+              args:
+                name: defaultCB
+                fallbackUri: forward:/fallback/errorReportes
         - id: route-ms-reportes
           uri: http://localhost:8081
           predicates:

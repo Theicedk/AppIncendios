@@ -38,8 +38,11 @@ public class Reporte {
     @Column(nullable = false)
     private String descripcion;
 
-    @Transient //Atributo que sirve para informar que la base de datos que este sera un dato no persistente
-    private Point ubicacion;
+    @Column(name = "latitud")
+    private Double latitud;
+
+    @Column(name = "longitud")
+    private Double longitud;
 
     @Column(nullable = false)
     private boolean verificado;

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import cl.duoc.valledelsol.ms_geolocalizacion.dto.ReporteIncendioKafkaDTO;
+import cl.duoc.valledelsol.ms_geolocalizacion.dto.ReporteKafkaEvent;
 import cl.duoc.valledelsol.ms_geolocalizacion.entity.FocoIncendio;
 import cl.duoc.valledelsol.ms_geolocalizacion.repository.FocoIncendioRepository;
 
@@ -28,20 +28,26 @@ public class FocoIncendioKafkaListener {
     }
 
     @KafkaListener(topics = "topic-prueba-incendio", groupId = "ms-geolocalizacion")
-    public void escucharFoco(String mensaje) throws Exception {
-        ReporteIncendioKafkaDTO dto = objectMapper.readValue(mensaje, ReporteIncendioKafkaDTO.class);
+    public void escucharFoco(String mensaje) {
+        try {
+            ReporteKafkaEvent dto = objectMapper.readValue(mensaje, ReporteKafkaEvent.class);
 
-        if (dto.latitud() == null || dto.longitud() == null) {
-            throw new IllegalArgumentException("Latitud y longitud son obligatorias para crear el Point");
+            if (dto.latitud() == null || dto.longitud() == null) {
+                throw new IllegalArgumentException("Latitud y longitud son obligatorias para crear el Point");
+            }
+
+            Point ubicacion = geometryFactory.createPoint(new Coordinate(dto.longitud(), dto.latitud()));
+            ubicacion.setSRID(4326);
+
+            FocoIncendio focoIncendio = new FocoIncendio();
+            focoIncendio.setReporteId(dto.id());
+            focoIncendio.setUbicacion(ubicacion);
+
+            focoIncendioRepository.save(focoIncendio);
+            System.out.println("Foco de incendio guardado correctamente con ID de reporte: " + dto.id());
+        } catch (Exception e) {
+            System.err.println("Error procesando mensaje en FocoIncendioKafkaListener:");
+            e.printStackTrace();
         }
-
-        Point ubicacion = geometryFactory.createPoint(new Coordinate(dto.longitud(), dto.latitud()));
-        ubicacion.setSRID(4326);
-
-        FocoIncendio focoIncendio = new FocoIncendio();
-        focoIncendio.setReporteId(dto.reporteId());
-        focoIncendio.setUbicacion(ubicacion);
-
-        focoIncendioRepository.save(focoIncendio);
     }
 }

@@ -1,0 +1,1 @@
+SELECT id, descripcion, st_astext FROM reporte ORDER BY id DESC LIMIT 1;
