@@ -27,13 +27,15 @@ public class BffController {
                 .uri("http://localhost:8081/api/reportes")
                 .retrieve()
                 .bodyToFlux(ReporteDTO.class)
-                .collectList();
+                .collectList()
+                .onErrorReturn(new java.util.ArrayList<>());
 
         Mono<List<FocoDTO>> focosMono = webClient.get()
                 .uri("http://localhost:8083/api/focos")
                 .retrieve()
                 .bodyToFlux(FocoDTO.class)
-                .collectList();
+                .collectList()
+                .onErrorReturn(new java.util.ArrayList<>());
 
         return Mono.zip(reportesMono, focosMono)
                 .map(tuple -> new DashboardDTO(tuple.getT1(), tuple.getT2()));

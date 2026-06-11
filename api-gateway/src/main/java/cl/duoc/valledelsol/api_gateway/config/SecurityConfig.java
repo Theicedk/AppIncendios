@@ -1,6 +1,5 @@
 package cl.duoc.valledelsol.api_gateway.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,31 +16,37 @@ import org.springframework.security.oauth2.server.resource.authentication.Reacti
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Arrays;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsWebFilter;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 @Configuration // Avisa a Spring que esta clase contiene configuraciones del sistema
 @EnableWebFluxSecurity // Version especial para gateway de @EnableWebSecurity
 public class SecurityConfig {
-    // Funcion value que sirve para inyectar el valor de nuestra variable audience desde el application.yml
-    // @Value("${spring.security.oauth2.resourceserver.jwt.audiences}")
-    // private String audience;
-
     @Bean //Funcion que se encarga de guardar el resultado de la config de seguridad, para que luego pueda ser reutilizada en spring
     //Objeto que sirve como filtro de seguridad para las rutas del API Gateway, se encarga de validar los tokens JWT y verificar los permisos de acceso a las rutas protegidas
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
+            // 1. Configuración de accesos a las rutas
             .authorizeExchange(exchanges -> exchanges
-                // PERMITIR TODO TEMPORALMENTE (PARA LA APP MÓVIL / SIN AUTH)
-                .anyExchange().permitAll()
-            )
-            // Deshabilitar CSRF
-            .csrf(csrf -> csrf.disable())
-            // Habilitar CORS
-            .cors(org.springframework.security.config.Customizer.withDefaults());
+                //Rutas públicas (sin autenticación)
+                 .pathMatchers(HttpMethod.GET,"/api/focos/**").permitAll()
+                 .pathMatchers(HttpMethod.POST, "/api/reportes/**").permitAll()
+                 .pathMatchers(HttpMethod.GET, "/api/bff/dashboard-combinado/**", "/api/bff/dashboard-combinado").permitAll()
 
+                .anyExchange().authenticated() 
+            )
+            
+            // 2. Le decimos a Spring Boot que valide los Tokens JWT usando Auth0
+            .oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(jwt -> jwt
+                    // Le inyectamos tu convertidor personalizado para que lea los ROLES y SCOPES de Auth0
+                    .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                )
+            )
+            
+            // 3. Deshabilitar CSRF (Innecesario ya que usamos JWT)
+            .csrf(csrf -> csrf.disable())
+            
+            // 4. Desabilitar Cors para que GlobalCorsConfig lo maneje
+            .cors(cors -> cors.disable());
         return http.build();
     }
 
