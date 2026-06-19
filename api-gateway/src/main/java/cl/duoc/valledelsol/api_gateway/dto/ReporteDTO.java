@@ -5,5 +5,6 @@ public record ReporteDTO(
     String descripcion,
     Double latitud,
     Double longitud,
-    String estado
+    String estado,
+    boolean verificado
 ) {}

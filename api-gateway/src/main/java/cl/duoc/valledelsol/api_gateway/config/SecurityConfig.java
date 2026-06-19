@@ -28,7 +28,9 @@ public class SecurityConfig {
             .authorizeExchange(exchanges -> exchanges
                 //Rutas públicas (sin autenticación)
                  .pathMatchers(HttpMethod.GET,"/api/focos/**").permitAll()
-                 .pathMatchers(HttpMethod.POST, "/api/reportes/**").permitAll()
+                 .pathMatchers(HttpMethod.GET,"/api/reportes/**").permitAll()
+                 .pathMatchers(HttpMethod.PUT,"/api/reportes/**").permitAll()
+                 .pathMatchers(HttpMethod.POST,"/api/reportes/**").permitAll()
                  .pathMatchers(HttpMethod.GET, "/api/bff/dashboard-combinado/**", "/api/bff/dashboard-combinado").permitAll()
 
                 .anyExchange().authenticated() 

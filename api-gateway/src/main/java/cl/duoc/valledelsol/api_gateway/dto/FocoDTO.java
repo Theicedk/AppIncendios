@@ -4,5 +4,6 @@ public record FocoDTO(
     Long id,
     Double latitud,
     Double longitud,
-    String estado
+    String estado,
+    boolean verificado
 ) {}

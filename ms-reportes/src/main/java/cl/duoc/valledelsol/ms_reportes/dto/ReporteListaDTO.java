@@ -5,6 +5,7 @@ public record ReporteListaDTO(
     String descripcion,
     Double latitud,
     Double longitud,
-    String estado
+    String estado,
+    Boolean verificado
 ) {
 }

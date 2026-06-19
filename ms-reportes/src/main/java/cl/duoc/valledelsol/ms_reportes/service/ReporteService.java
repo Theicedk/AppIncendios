@@ -4,7 +4,7 @@ import java.util.List;
 import cl.duoc.valledelsol.ms_reportes.dto.ReporteDTO;
 import cl.duoc.valledelsol.ms_reportes.dto.ReporteCreacionDTO;
 import cl.duoc.valledelsol.ms_reportes.dto.ReporteListaDTO;
-import cl.duoc.valledelsol.ms_reportes.entity.Reporte;
+
 
 public interface ReporteService {
     

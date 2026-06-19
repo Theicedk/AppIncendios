@@ -51,7 +51,8 @@ public class ReporteServiceImpl implements ReporteService {
             guardado.getDescripcion(),
             guardado.getLatitud(),
             guardado.getLongitud(),
-            guardado.getEstadoIncendio().name()
+            guardado.getEstadoIncendio().name(),
+            guardado.isVerificado()
         );
     }
 
@@ -63,7 +64,8 @@ public class ReporteServiceImpl implements ReporteService {
                 reporte.getDescripcion(),
                 reporte.getLatitud(),
                 reporte.getLongitud(),
-                reporte.getEstadoIncendio() != null ? reporte.getEstadoIncendio().name() : EstadoIncendio.REPORTADO.name()
+                reporte.getEstadoIncendio() != null ? reporte.getEstadoIncendio().name() : EstadoIncendio.REPORTADO.name(),
+                reporte.isVerificado()
             ))
             .toList();
     }
