@@ -1,4 +1,9 @@
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-ecmx143cjy36oshj.us.auth0.com/
   application:
     name: ms-reportes
   datasource:

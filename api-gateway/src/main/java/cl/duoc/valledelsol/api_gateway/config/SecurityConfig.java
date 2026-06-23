@@ -3,6 +3,8 @@ package cl.duoc.valledelsol.api_gateway.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -19,6 +21,7 @@ import java.util.List;
 
 @Configuration // Avisa a Spring que esta clase contiene configuraciones del sistema
 @EnableWebFluxSecurity // Version especial para gateway de @EnableWebSecurity
+@EnableReactiveMethodSecurity // Habilita seguridad a nivel de métodos con anotaciones como @PreAuthorize en controladores o servicios
 public class SecurityConfig {
     @Bean //Funcion que se encarga de guardar el resultado de la config de seguridad, para que luego pueda ser reutilizada en spring
     //Objeto que sirve como filtro de seguridad para las rutas del API Gateway, se encarga de validar los tokens JWT y verificar los permisos de acceso a las rutas protegidas
@@ -27,10 +30,8 @@ public class SecurityConfig {
             // 1. Configuración de accesos a las rutas
             .authorizeExchange(exchanges -> exchanges
                 //Rutas públicas (sin autenticación)
-                 .pathMatchers(HttpMethod.GET,"/api/focos/**").permitAll()
-                 .pathMatchers(HttpMethod.GET,"/api/reportes/**").permitAll()
-                 .pathMatchers(HttpMethod.PUT,"/api/reportes/**").permitAll()
-                 .pathMatchers(HttpMethod.POST,"/api/reportes/**").permitAll()
+                 .pathMatchers(HttpMethod.GET,"/api/focos/**", "/api/focos").permitAll()
+                 .pathMatchers(HttpMethod.GET,"/api/reportes/**", "/api/reportes").permitAll()
                  .pathMatchers(HttpMethod.GET, "/api/bff/dashboard-combinado/**", "/api/bff/dashboard-combinado").permitAll()
 
                 .anyExchange().authenticated() 

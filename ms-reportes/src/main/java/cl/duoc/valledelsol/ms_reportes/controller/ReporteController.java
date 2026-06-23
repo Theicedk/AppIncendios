@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import cl.duoc.valledelsol.ms_reportes.dto.ReporteCreacionDTO;
 import cl.duoc.valledelsol.ms_reportes.dto.ReporteDTO;
@@ -39,12 +40,14 @@ public class ReporteController {
 
     // 3. EL POST REAL QUE FALTABA (Crea el reporte en BD, SIN Kafka)
     @PostMapping
+    @PreAuthorize("hasAuthority('SCOPE_write:reportes')") // Solo usuarios con el permiso write:reportes pueden crear reportes
     public ReporteListaDTO crearReporte(@RequestBody ReporteCreacionDTO reporteDTO) {
         return reporteService.crearReporte(reporteDTO);
     }
 
     // 4. EL PUT DE VERIFICACIÓN (Actualiza BD Y dispara Kafka)
     @PutMapping("/{id}/verificar")
+    @PreAuthorize("hasAuthority('SCOPE_update:reportes')") // Solo usuarios con el permiso update:reportes pueden verificar reportes
     public ReporteDTO verificarReporte(@PathVariable("id") Long id) {
         return reporteService.verificarReporte(id);
     }
