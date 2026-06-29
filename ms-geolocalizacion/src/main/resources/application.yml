@@ -13,6 +13,13 @@ spring:
       hibernate:
         dialect: org.hibernate.spatial.dialect.postgis.PostgisPG10Dialect
     open-in-view: false
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: ms-geolocalizacion
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
 server:
   port: 8083

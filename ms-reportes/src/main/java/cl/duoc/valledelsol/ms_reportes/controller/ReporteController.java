@@ -2,8 +2,8 @@ package cl.duoc.valledelsol.ms_reportes.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,27 +38,23 @@ public class ReporteController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('write:reportes')")
     public ReporteListaDTO crearReporte(@RequestBody ReporteCreacionDTO reporteDTO) {
         return reporteService.crearReporte(reporteDTO);
     }
 
     @PutMapping("/{id}/corroborar")
-    @PreAuthorize("hasAuthority('update:reportes')")
     public ReporteListaDTO iniciarCorroboracion(@PathVariable("id") Long id) {
         return reporteService.iniciarCorroboracion(id);
     }
 
     @PutMapping("/{id}/verificar")
-    @PreAuthorize("hasAuthority('update:reportes')")
     public ReporteDTO verificarReporte(@PathVariable("id") Long id) {
         return reporteService.verificarReporte(id);
     }
 
     @PutMapping("/{id}/atender")
-    @PreAuthorize("hasAuthority('accept:alarmas')")
     public ResponseEntity<Void> atenderReporte(@PathVariable("id") Long id) {
         reporteService.atenderReporte(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

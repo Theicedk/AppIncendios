@@ -3,10 +3,13 @@ package cl.duoc.valledelsol.ms_alarmas.consumer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cl.duoc.valledelsol.ms_alarmas.dto.ReporteKafkaEvent;
 import cl.duoc.valledelsol.ms_alarmas.entity.Alarma;
+import cl.duoc.valledelsol.ms_alarmas.enums.EstadoAlarma;
 import cl.duoc.valledelsol.ms_alarmas.enums.Severidad;
 import cl.duoc.valledelsol.ms_alarmas.repository.AlarmaRepository;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 public class KafkaTestConsumer {
@@ -30,7 +33,13 @@ public class KafkaTestConsumer {
 
             Severidad severidad = Severidad.ROJA;
 
-            Alarma alarma = new Alarma(null, mensajeAlarma, reporte.id(), severidad, null);
+            Alarma alarma = new Alarma();
+            alarma.setMensaje(mensajeAlarma);
+            alarma.setReporteId(reporte.id());
+            alarma.setSeveridad(severidad);
+            alarma.setEstado(EstadoAlarma.PENDIENTE);
+            alarma.setCreadaEn(LocalDateTime.now());
+
             Alarma guardada = alarmaRepository.save(alarma);
 
             System.out.println("Alarma guardada con ID: " + guardada.getId());

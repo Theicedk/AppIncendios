@@ -4,7 +4,22 @@ public enum EstadoIncendio {
     REPORTADO,
     EN_CORROBORACION,
     VERIFICADO,
-    ATENDIDO;
+    ATENDIDO,
+    ACTIVO;
+
+    public static EstadoIncendio fromLegacyValue(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        return switch (value.trim().toUpperCase()) {
+            case "ACTIVO", "REPORTADO" -> REPORTADO;
+            case "EN_CORROBORACION" -> EN_CORROBORACION;
+            case "VERIFICADO" -> VERIFICADO;
+            case "ATENDIDO" -> ATENDIDO;
+            default -> valueOf(value.trim().toUpperCase());
+        };
+    }
 
     public boolean puedeTransicionarA(EstadoIncendio destino) {
         if (destino == null) {
@@ -12,7 +27,7 @@ public enum EstadoIncendio {
         }
 
         return switch (this) {
-            case REPORTADO -> destino == EN_CORROBORACION;
+            case REPORTADO, ACTIVO -> destino == EN_CORROBORACION || destino == VERIFICADO;
             case EN_CORROBORACION -> destino == VERIFICADO;
             case VERIFICADO -> destino == ATENDIDO;
             case ATENDIDO -> false;
