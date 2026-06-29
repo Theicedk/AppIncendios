@@ -10,6 +10,16 @@
             "name": "Geolocalizacion",
             "username": "appuser",
             "database": "bd_geolocalizacion"
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "Alarmas",
+            "database": "bd_alarmas",
+            "username": "appuser"
         }
     ]
 }
