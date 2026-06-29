@@ -1,5 +1,8 @@
 package cl.duoc.valledelsol.ms_alarmas.entity;
 
+import java.time.LocalDateTime;
+
+import cl.duoc.valledelsol.ms_alarmas.enums.EstadoAlarma;
 import cl.duoc.valledelsol.ms_alarmas.enums.Severidad;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,9 +33,22 @@ public class Alarma {
     @Column
     private Long reporteId;
 
+    @Column
+    private Long companiaAsignadaId;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Severidad severidad = Severidad.ROJA;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private EstadoAlarma estado = EstadoAlarma.PENDIENTE;
+
+    @Column(nullable = false)
+    private LocalDateTime creadaEn;
+
+    @Column
+    private LocalDateTime aceptadaEn;
 
     @jakarta.persistence.OneToMany(mappedBy = "alarma", cascade = jakarta.persistence.CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
     private java.util.List<RegistroExposicion> exposiciones;

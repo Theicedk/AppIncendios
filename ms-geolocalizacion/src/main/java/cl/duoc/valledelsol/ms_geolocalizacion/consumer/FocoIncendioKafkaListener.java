@@ -1,30 +1,22 @@
 package cl.duoc.valledelsol.ms_geolocalizacion.consumer;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cl.duoc.valledelsol.ms_geolocalizacion.dto.ReporteKafkaEvent;
-import cl.duoc.valledelsol.ms_geolocalizacion.entity.FocoIncendio;
-import cl.duoc.valledelsol.ms_geolocalizacion.repository.FocoIncendioRepository;
+import cl.duoc.valledelsol.ms_geolocalizacion.service.FocoService;
 
 @Component
 public class FocoIncendioKafkaListener {
 
     private final ObjectMapper objectMapper;
-    private final GeometryFactory geometryFactory;
-    private final FocoIncendioRepository focoIncendioRepository;
+    private final FocoService focoService;
 
-    public FocoIncendioKafkaListener(ObjectMapper objectMapper,
-                                     GeometryFactory geometryFactory,
-                                     FocoIncendioRepository focoIncendioRepository) {
+    public FocoIncendioKafkaListener(ObjectMapper objectMapper, FocoService focoService) {
         this.objectMapper = objectMapper;
-        this.geometryFactory = geometryFactory;
-        this.focoIncendioRepository = focoIncendioRepository;
+        this.focoService = focoService;
     }
 
     @KafkaListener(topics = "topic-prueba-incendio", groupId = "ms-geolocalizacion")
@@ -36,15 +28,7 @@ public class FocoIncendioKafkaListener {
                 throw new IllegalArgumentException("Latitud y longitud son obligatorias para crear el Point");
             }
 
-            Point ubicacion = geometryFactory.createPoint(new Coordinate(dto.longitud(), dto.latitud()));
-            ubicacion.setSRID(4326);
-
-            FocoIncendio focoIncendio = new FocoIncendio();
-            focoIncendio.setReporteId(dto.id());
-            focoIncendio.setUbicacion(ubicacion);
-
-            focoIncendioRepository.save(focoIncendio);
-            System.out.println("Foco de incendio guardado correctamente con ID de reporte: " + dto.id());
+            focoService.asignarGrupo(dto.id(), dto.latitud(), dto.longitud());
         } catch (Exception e) {
             System.err.println("Error procesando mensaje en FocoIncendioKafkaListener:");
             e.printStackTrace();

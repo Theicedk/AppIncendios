@@ -33,5 +33,7 @@ build/
 .vscode/
 
 
-
+./.env
 ./DOCUMENTACION-ESTADO-Y-ARQUITECTURA.md
+./opencode/
+./opencode.json
