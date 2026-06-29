@@ -2,6 +2,8 @@ package cl.duoc.valledelsol.ms_reportes.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,7 +11,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 import cl.duoc.valledelsol.ms_reportes.dto.ReporteCreacionDTO;
 import cl.duoc.valledelsol.ms_reportes.dto.ReporteDTO;
@@ -26,29 +27,38 @@ public class ReporteController {
         this.reporteService = reporteService;
     }
 
-    // 1. El endpoint de prueba que siempre ha funcionado
     @GetMapping("/test")
     public String testReporte() {
         return "Microservicio de Reportes responde OK";
     }
 
-    // 2. El GET para listar (El que usa el BFF Dashboard)
     @GetMapping
     public List<ReporteListaDTO> obtenerReportes() {
         return reporteService.obtenerTodos();
     }
 
-    // 3. EL POST REAL QUE FALTABA (Crea el reporte en BD, SIN Kafka)
     @PostMapping
-    @PreAuthorize("hasAuthority('write:reportes')") // Solo usuarios con el permiso write:reportes pueden crear reportes
+    @PreAuthorize("hasAuthority('write:reportes')")
     public ReporteListaDTO crearReporte(@RequestBody ReporteCreacionDTO reporteDTO) {
         return reporteService.crearReporte(reporteDTO);
     }
 
-    // 4. EL PUT DE VERIFICACIÓN (Actualiza BD Y dispara Kafka)
+    @PutMapping("/{id}/corroborar")
+    @PreAuthorize("hasAuthority('update:reportes')")
+    public ReporteListaDTO iniciarCorroboracion(@PathVariable("id") Long id) {
+        return reporteService.iniciarCorroboracion(id);
+    }
+
     @PutMapping("/{id}/verificar")
-    @PreAuthorize("hasAuthority('update:reportes')") // Solo usuarios con el permiso update:reportes pueden verificar reportes
+    @PreAuthorize("hasAuthority('update:reportes')")
     public ReporteDTO verificarReporte(@PathVariable("id") Long id) {
         return reporteService.verificarReporte(id);
+    }
+
+    @PutMapping("/{id}/atender")
+    @PreAuthorize("hasAuthority('accept:alarmas')")
+    public ResponseEntity<Void> atenderReporte(@PathVariable("id") Long id) {
+        reporteService.atenderReporte(id);
+        return ResponseEntity.noContent().build();
     }
 }

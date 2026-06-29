@@ -4,5 +4,6 @@ public record ReporteKafkaEvent(
     Long id,
     String descripcion,
     Double latitud,
-    Double longitud
+    Double longitud,
+    Long grupoId
 ) {}

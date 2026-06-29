@@ -13,7 +13,11 @@ public interface ReporteService {
     
     // 2. Obtiene todos (Para el dashboard)
     List<ReporteListaDTO> obtenerTodos();
+
+    ReporteListaDTO iniciarCorroboracion(Long id);
     
     // 3. Verifica el reporte (Actualiza BD Y dispara Kafka)
     ReporteDTO verificarReporte(Long id);
+
+    void atenderReporte(Long id);
 }
