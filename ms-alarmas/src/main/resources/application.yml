@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: local
   application:
     name: ms-alarmas
   datasource:
@@ -20,3 +22,13 @@ spring:
           issuer-uri: https://dev-ecmx143cjy36oshj.us.auth0.com/
 server:
   port: 8082
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: alpha
+    doc-expansion: none
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs

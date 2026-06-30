@@ -1,4 +1,11 @@
 spring:
+  profiles:
+    active: local
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-ecmx143cjy36oshj.us.auth0.com/
   application:
     name: ms-geolocalizacion
   datasource:
@@ -24,3 +31,13 @@ spring:
 
 server:
   port: 8083
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: alpha
+    doc-expansion: none
+    config-url: /v3/api-docs/swagger-config
+    url: /v3/api-docs

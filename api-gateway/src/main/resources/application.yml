@@ -22,46 +22,57 @@ spring:
     name: api-gateway
   cloud: ##Config de rutas para el API Gateway
     gateway:
-      server:
-        webflux:
-          routes:
-            - id: route-ms-reportes-verificar
-              uri: http://localhost:8081
-              predicates:
-                - Path=/api/reportes/{id}/verificar
-              filters:
-                - StripPrefix=0
-                - name: CircuitBreaker
-                  args:
-                    name: defaultCB
-                    fallbackUri: forward:/fallback/errorReportes
-            - id: route-ms-reportes
-              uri: http://localhost:8081
-              predicates:
-                - Path=/api/reportes/**
-              filters:
-                - name: CircuitBreaker
-                  args:
-                    name: defaultCB # Usa la config definida previamente
-                    fallbackUri: forward:/fallback/errorReportes
-            - id: route-ms-alarmas
-              uri: http://localhost:8082
-              predicates:
-                - Path=/api/alarmas/**
-              filters:
-                - name: CircuitBreaker
-                  args:
-                    name: defaultCB # Usa la config definida previamente
-                    fallbackUri: forward:/fallback/errorAlarmas
-            - id: route-ms-geolocalizacion
-              uri: http://localhost:8083
-              predicates:
-                - Path=/api/focos/**
-              filters:
-                - name: CircuitBreaker
-                  args:
-                    name: defaultCB # Usa la config definida previamente
-                    fallbackUri: forward:/fallback/errorGeolocalizacion
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            exposedHeaders: "*"
+            maxAge: 3600
+      routes:
+        - id: route-ms-reportes-verificar
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/reportes/{id}/verificar
+          filters:
+            - StripPrefix=0
+            - name: CircuitBreaker
+              args:
+                name: defaultCB
+                fallbackUri: forward:/fallback/errorReportes
+        - id: route-ms-reportes
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/reportes/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCB
+                fallbackUri: forward:/fallback/errorReportes
+        - id: route-ms-alarmas
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/alarmas/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCB
+                fallbackUri: forward:/fallback/errorAlarmas
+        - id: route-ms-geolocalizacion
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/focos/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCB
+                fallbackUri: forward:/fallback/errorGeolocalizacion
 
 server:
   port: 8080

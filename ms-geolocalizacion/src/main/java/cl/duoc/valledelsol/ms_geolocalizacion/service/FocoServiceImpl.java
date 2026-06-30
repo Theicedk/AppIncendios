@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import cl.duoc.valledelsol.ms_geolocalizacion.dto.FocoMapaDTO;
+import cl.duoc.valledelsol.ms_geolocalizacion.dto.HeatmapDTO;
 import cl.duoc.valledelsol.ms_geolocalizacion.entity.FocoIncendio;
 import cl.duoc.valledelsol.ms_geolocalizacion.repository.FocoIncendioRepository;
 
@@ -37,6 +38,19 @@ public class FocoServiceImpl implements FocoService {
                     foco.getUbicacion().getY(),
                     foco.getUbicacion().getX(),
                     "ACTIVO"
+                ))
+                .toList();
+    }
+
+    @Override
+    public List<HeatmapDTO> heatmapAgregado() {
+        return focoIncendioRepository.heatmapAgregado(LocalDateTime.now().minusDays(30))
+                .stream()
+                .map(row -> new HeatmapDTO(
+                        ((Number) row[0]).intValue(),
+                        ((Number) row[1]).intValue(),
+                        (String) row[2],
+                        ((Number) row[3]).longValue()
                 ))
                 .toList();
     }
