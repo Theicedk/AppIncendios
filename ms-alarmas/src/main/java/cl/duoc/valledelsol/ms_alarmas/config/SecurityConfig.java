@@ -2,8 +2,8 @@ package cl.duoc.valledelsol.ms_alarmas.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,50 +16,63 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Profile("local")
+    public SecurityFilterChain localSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-            // 1. Activar y configurar CORS para interceptar peticiones cruzadas de React
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            
-            // 2. Deshabilitar CSRF
             .csrf(csrf -> csrf.disable())
-            
-            // 3. Reglas de autorización con coincidencia estricta de rutas
             .authorizeHttpRequests(auth -> auth
-                // SOLUCIÓN AL 401: Declaramos la ruta base exacta Y sus subrutas de forma explícita
+                .anyRequest().permitAll()
+            )
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            );
+        return http.build();
+    }
+
+    @Bean
+    @Profile("!local")
+    public SecurityFilterChain prodSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/v3/api-docs/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/api-docs/**"
+                ).permitAll()
                 .requestMatchers("/ws/alarmas", "/ws/alarmas/**").permitAll()
-                
-                // Cualquier otra petición REST requerirá token JWT de Auth0
                 .anyRequest().authenticated()
             )
-            
-            // 4. Política de sesión sin estado
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            
-            // 5. Servidor de recursos para Auth0
             .oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(Customizer.withDefaults())
+                .jwt(jwt -> {})
             );
-
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Permitir el origen de tu frontend de Vite
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:5173", "http://127.0.0.1:5173"));
+        configuration.setAllowedOriginPatterns(List.of(
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://192.168.1.*:5173",
+            "http://192.168.1.*:5174",
+            "http://localhost:5174",
+            "http://127.0.0.1:5174"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
-        
-        // CRÍTICO PARA WEBSOCKETS / SOCKJS: Permite el envío de credenciales de conexión
-        configuration.setAllowCredentials(true); 
+        configuration.setExposedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
