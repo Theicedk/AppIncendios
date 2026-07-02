@@ -5,6 +5,7 @@ public record AlertaWebSocketDTO(
     Long reporteId,
     Double lat,
     Double lon,
-    String tipo
+    String tipo,
+    String severidad
 ) {
 }

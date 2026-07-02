@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,13 +28,16 @@ public class ReporteServiceImpl implements ReporteService {
     private final ReporteRepository reporteRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public ReporteServiceImpl(ReporteRepository reporteRepository,
                               KafkaTemplate<String, String> kafkaTemplate,
-                              ObjectMapper objectMapper) {
+                              ObjectMapper objectMapper,
+                              SimpMessagingTemplate messagingTemplate) {
         this.reporteRepository = reporteRepository;
         this.kafkaTemplate = kafkaTemplate;
         this.objectMapper = objectMapper;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Override
@@ -49,6 +53,8 @@ public class ReporteServiceImpl implements ReporteService {
         reporte.setLongitud(dto.longitud());
 
         Reporte guardado = reporteRepository.save(reporte);
+
+        notificarDashboard(mapToListaDto(guardado), "CREADO");
 
         return mapToListaDto(guardado);
     }
@@ -68,6 +74,8 @@ public class ReporteServiceImpl implements ReporteService {
         reporte.setEstadoIncendio(EstadoIncendio.EN_CORROBORACION);
         Reporte guardado = reporteRepository.save(reporte);
 
+        notificarDashboard(mapToListaDto(guardado), "CORROBORADO");
+
         return mapToListaDto(guardado);
     }
 
@@ -82,6 +90,8 @@ public class ReporteServiceImpl implements ReporteService {
 
         publicarEventoKafka(guardado);
 
+        notificarDashboard(mapToListaDto(guardado), "VERIFICADO");
+
         return new ReporteDTO(
             guardado.getEncabezado(),
             guardado.getDescripcion(),
@@ -90,6 +100,12 @@ public class ReporteServiceImpl implements ReporteService {
             guardado.isVerificado(),
             guardado.getEstadoIncendio()
         );
+    }
+
+    @Override
+    public ReporteListaDTO obtenerPorId(Long id) {
+        Reporte reporte = buscarReporte(id);
+        return mapToListaDto(reporte);
     }
 
     @Override
@@ -104,6 +120,22 @@ public class ReporteServiceImpl implements ReporteService {
         if (reporte.getGrupoId() != null) {
             reporteRepository.cerrarGrupo(reporte.getGrupoId(), EstadoIncendio.ATENDIDO, reporte.getId());
         }
+
+        notificarDashboard(mapToListaDto(reporte), "ATENDIDO");
+    }
+
+    @Override
+    public List<ReporteListaDTO> obtenerCercanos(double lat, double lng, double radioKm) {
+        double deltaLat = radioKm / 111.0;
+        double deltaLng = radioKm / (111.0 * Math.cos(Math.toRadians(lat)));
+        double minLat = lat - deltaLat;
+        double maxLat = lat + deltaLat;
+        double minLng = lng - deltaLng;
+        double maxLng = lng + deltaLng;
+        return reporteRepository.findByBoundingBox(minLat, maxLat, minLng, maxLng)
+            .stream()
+            .map(this::mapToListaDto)
+            .toList();
     }
 
     private Reporte buscarReporte(Long id) {
@@ -143,6 +175,15 @@ public class ReporteServiceImpl implements ReporteService {
             kafkaTemplate.send(TOPIC_REPORTE, mensajeJson);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Error al serializar el mensaje para Kafka", e);
+        }
+    }
+
+    private void notificarDashboard(ReporteListaDTO dto, String accion) {
+        try {
+            String mensajeJson = objectMapper.writeValueAsString(dto);
+            messagingTemplate.convertAndSend("/topic/reportes-municipio", mensajeJson);
+        } catch (JsonProcessingException e) {
+            System.err.println("Error al notificar Dashboard vía WebSocket: " + e.getMessage());
         }
     }
 }

@@ -24,7 +24,9 @@ public class AlarmaKafkaListener {
         try {
             ReporteKafkaEvent evento = objectMapper.readValue(mensaje, ReporteKafkaEvent.class);
             if (evento.latitud() != null && evento.longitud() != null) {
-                despachoAlarmaService.disparar(evento.id(), evento.latitud(), evento.longitud(), true);
+                String descripcion = evento.descripcion() != null ? evento.descripcion() : "";
+                despachoAlarmaService.disparar(evento.id(), evento.latitud(), evento.longitud(), true,
+                        1, descripcion);
             }
         } catch (Exception ex) {
             System.err.println("Error procesando evento Kafka: " + ex.getMessage());

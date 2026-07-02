@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cl.duoc.valledelsol.ms_reportes.dto.ReporteCreacionDTO;
@@ -40,6 +41,11 @@ public class ReporteController {
         return reporteService.obtenerTodos();
     }
 
+    @GetMapping("/{id}")
+    public ReporteListaDTO obtenerPorId(@PathVariable("id") Long id) {
+        return reporteService.obtenerPorId(id);
+    }
+
     
     @PostMapping
     public ReporteListaDTO crearReporte(@RequestBody ReporteCreacionDTO reporteDTO) {
@@ -60,5 +66,12 @@ public class ReporteController {
     public ResponseEntity<Void> atenderReporte(@PathVariable("id") Long id) {
         reporteService.atenderReporte(id);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @GetMapping("/nearby")
+    public List<ReporteListaDTO> obtenerCercanos(@RequestParam("lat") double lat,
+                                                  @RequestParam("lng") double lng,
+                                                  @RequestParam(defaultValue = "1.0") double radioKm) {
+        return reporteService.obtenerCercanos(lat, lng, radioKm);
     }
 }

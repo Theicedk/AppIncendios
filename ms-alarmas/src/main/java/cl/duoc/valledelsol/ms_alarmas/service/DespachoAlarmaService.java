@@ -30,18 +30,25 @@ public class DespachoAlarmaService {
     }
 
     @Transactional
-    public Alarma disparar(Long reporteId, Double lat, Double lon, boolean verificado) {
+    public Alarma disparar(Long reporteId, Double lat, Double lon, boolean verificado,
+                           int cantidadReportes, String descripcion) {
         if (!verificado) {
             throw new IncidenteNoVerificadoException(reporteId);
         }
 
         CompaniaBomberos compania = asignacionBomberosService.seleccionarMasCercana(lat, lon);
 
+        String severidadStr = calcularSeveridad(cantidadReportes, descripcion);
+
         Alarma alarma = new Alarma();
         alarma.setMensaje("Alerta despachada para reporte " + reporteId);
         alarma.setReporteId(reporteId);
         alarma.setCompaniaAsignadaId(compania.getId());
-        alarma.setSeveridad(Severidad.ROJA);
+        alarma.setSeveridad(switch (severidadStr) {
+            case "ALTA", "CATASTROFE" -> Severidad.ROJA;
+            case "MEDIA" -> Severidad.NARANJA;
+            default -> Severidad.AMARILLA;
+        });
         alarma.setEstado(EstadoAlarma.PENDIENTE);
         alarma.setCreadaEn(LocalDateTime.now());
 
@@ -52,12 +59,31 @@ public class DespachoAlarmaService {
             guardada.getReporteId(),
             lat,
             lon,
-            "ALERTA_NUEVA"
+            "ALERTA_NUEVA",
+            severidadStr
         );
 
         messagingTemplate.convertAndSend("/topic/compania/" + compania.getId(), alerta);
 
         return guardada;
+    }
+
+    private String calcularSeveridad(int cantidadReportes, String descripcion) {
+        String descLower = descripcion != null ? descripcion.toLowerCase() : "";
+        java.util.Set<String> palabrasClave = java.util.Set.of("explosión", "explosion", "casas", "rápido", "rapido");
+
+        boolean contienePalabraClave = palabrasClave.stream().anyMatch(descLower::contains);
+
+        if (contienePalabraClave) {
+            return "CATASTROFE";
+        }
+        if (cantidadReportes > 10) {
+            return "ALTA";
+        }
+        if (cantidadReportes >= 4) {
+            return "MEDIA";
+        }
+        return "BAJA";
     }
 
     @Transactional
