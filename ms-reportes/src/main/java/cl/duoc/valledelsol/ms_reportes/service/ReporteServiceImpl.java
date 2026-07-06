@@ -88,7 +88,7 @@ public class ReporteServiceImpl implements ReporteService {
         reporte.setEstadoIncendio(EstadoIncendio.VERIFICADO);
         Reporte guardado = reporteRepository.save(reporte);
 
-        publicarEventoKafka(guardado);
+        publicarEventoKafka(guardado, "VERIFICADO");
 
         notificarDashboard(mapToListaDto(guardado), "VERIFICADO");
 
@@ -121,7 +121,18 @@ public class ReporteServiceImpl implements ReporteService {
             reporteRepository.cerrarGrupo(reporte.getGrupoId(), EstadoIncendio.ATENDIDO, reporte.getId());
         }
 
+        publicarEventoKafka(reporte, "ATENDIDO");
+
         notificarDashboard(mapToListaDto(reporte), "ATENDIDO");
+    }
+
+    @Override
+    @Transactional
+    public void eliminarReporte(Long id) {
+        if (!reporteRepository.existsById(id)) {
+            throw new RuntimeException("Reporte no encontrado con ID: " + id);
+        }
+        reporteRepository.deleteById(id);
     }
 
     @Override
@@ -161,13 +172,14 @@ public class ReporteServiceImpl implements ReporteService {
         );
     }
 
-    private void publicarEventoKafka(Reporte reporte) {
+    private void publicarEventoKafka(Reporte reporte, String accion) {
         ReporteKafkaEvent evento = new ReporteKafkaEvent(
             reporte.getId(),
             reporte.getDescripcion(),
             reporte.getLatitud(),
             reporte.getLongitud(),
-            reporte.getGrupoId()
+            reporte.getGrupoId(),
+            accion
         );
 
         try {

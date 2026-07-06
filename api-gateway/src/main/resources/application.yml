@@ -71,6 +71,15 @@ spring:
                   args:
                     name: defaultCB
                     fallbackUri: forward:/fallback/errorGeolocalizacion
+            - id: route-ms-zonas-riesgo
+              uri: http://localhost:8083
+              predicates:
+                - Path=/api/zonas-riesgo/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: defaultCB
+                    fallbackUri: forward:/fallback/errorGeolocalizacion
             - id: route-ms-focos
               uri: http://localhost:8083
               predicates:

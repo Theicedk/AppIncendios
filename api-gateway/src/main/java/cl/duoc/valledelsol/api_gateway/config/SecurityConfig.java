@@ -46,6 +46,8 @@ public class SecurityConfig {
                 .pathMatchers(HttpMethod.POST, "/api/reportes/**", "/api/reportes").permitAll()
                 .pathMatchers(HttpMethod.PUT, "/api/reportes/**").permitAll()
                 .pathMatchers(HttpMethod.DELETE, "/api/reportes/**").permitAll()
+                .pathMatchers("/api/zonas-riesgo/**", "/api/zonas-riesgo").permitAll()
+                .pathMatchers("/api/companias/**", "/api/companias").permitAll()
                 .anyExchange().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2

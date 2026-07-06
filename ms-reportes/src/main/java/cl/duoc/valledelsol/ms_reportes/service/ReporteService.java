@@ -20,5 +20,7 @@ public interface ReporteService {
 
     void atenderReporte(Long id);
 
+    void eliminarReporte(Long id);
+
     List<ReporteListaDTO> obtenerCercanos(double lat, double lng, double radioKm);
 }
